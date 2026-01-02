@@ -1878,78 +1878,78 @@ void GUIFormSpecMenu::parseLabel(parserData* data, const std::string &element)
 
 void GUIFormSpecMenu::parseVertLabel(parserData* data, const std::string &element)
 {
-    std::vector<std::string> parts;
-    if (!precheckElement("vertlabel", element, 2, 2, parts))
-        return;
+	std::vector<std::string> parts;
+	if (!precheckElement("vertlabel", element, 2, 2, parts))
+		return;
 
-    std::vector<std::string> v_pos = split(parts[0], ',');
-    MY_CHECKPOS("vertlabel", 0);
+	std::vector<std::string> v_pos = split(parts[0], ',');
+	MY_CHECKPOS("vertlabel", 0);
 
-    // Use EnrichedString so color escapes are preserved
-    EnrichedString etext(unescape_string(utf8_to_wide(parts[1])));
+	// Use EnrichedString so color escapes are preserved
+	EnrichedString etext(unescape_string(utf8_to_wide(parts[1])));
 
-    auto style = getDefaultStyleForElement("vertlabel", "", "label");
-    gui::IGUIFont *font = style.getFont();
-    if (!font)
-        font = m_font;
+	auto style = getDefaultStyleForElement("vertlabel", "", "label");
+	gui::IGUIFont *font = style.getFont();
+	if (!font)
+		font = m_font;
 
-    v2s32 pos;
-    core::rect<s32> rect;
+	v2s32 pos;
+	core::rect<s32> rect;
 
-    const size_t char_count = etext.getString().size();
+	const size_t char_count = etext.getString().size();
 
-    if (data->real_coordinates) {
-        pos = getRealCoordinateBasePos(v_pos);
-        pos.X -= imgsize.X / 2;
+	if (data->real_coordinates) {
+		pos = getRealCoordinateBasePos(v_pos);
+		pos.X -= imgsize.X / 2;
 
-        rect = core::rect<s32>(
-            pos.X, pos.Y,
-            pos.X + imgsize.X,
-            pos.Y + font_line_height(font) * (char_count + 1)
-        );
+		rect = core::rect<s32>(
+			pos.X, pos.Y,
+			pos.X + imgsize.X,
+			pos.Y + font_line_height(font) * (char_count + 1)
+		);
 
-    } else {
-        pos = getElementBasePos(&v_pos);
+	} else {
+		pos = getElementBasePos(&v_pos);
 
-        rect = core::rect<s32>(
-            pos.X,
-            pos.Y + ((imgsize.Y / 2) - m_btn_height),
-            pos.X + 15,
-            pos.Y + font_line_height(font) * (char_count + 1) +
-                ((imgsize.Y / 2) - m_btn_height)
-        );
-    }
+		rect = core::rect<s32>(
+			pos.X,
+			pos.Y + ((imgsize.Y / 2) - m_btn_height),
+			pos.X + 15,
+			pos.Y + font_line_height(font) * (char_count + 1) +
+				((imgsize.Y / 2) - m_btn_height)
+		);
+	}
 
-    if (!data->explicit_size)
-        warningstream << "invalid use of label without a size[] element" << std::endl;
+	if (!data->explicit_size)
+		warningstream << "invalid use of label without a size[] element" << std::endl;
 
-    // Build vertical enriched string (one character per line)
-    EnrichedString vlabel;
-    for (size_t i = 0; i < char_count; i++) {
-        vlabel += etext.substr(i, 1);
-        vlabel.addCharNoColor(L'\n');
-    }
+	// Build vertical enriched string (one character per line)
+	EnrichedString vlabel;
+	for (size_t i = 0; i < char_count; i++) {
+		vlabel += etext.substr(i, 1);
+		vlabel.addCharNoColor(L'\n');
+	}
 
-    FieldSpec spec(
-        "",
-        L"",
-        L"",
-        258 + m_fields.size(),
-        4
-    );
+	FieldSpec spec(
+		"",
+		L"",
+		L"",
+		258 + m_fields.size(),
+		4
+	);
 
-    gui::IGUIStaticText *e = gui::StaticText::add(Environment, vlabel,
+	gui::IGUIStaticText *e = gui::StaticText::add(Environment, vlabel,
 			rect, false, false, data->current_parent, spec.fid);
 
-    e->setTextAlignment(gui::EGUIA_CENTER, gui::EGUIA_CENTER);
-    e->setNotClipped(style.getBool(StyleSpec::NOCLIP, false));
-    e->setOverrideColor(style.getColor(StyleSpec::TEXTCOLOR, video::SColor(0xFFFFFFFF)));
-    e->setOverrideFont(font);
+	e->setTextAlignment(gui::EGUIA_CENTER, gui::EGUIA_CENTER);
+	e->setNotClipped(style.getBool(StyleSpec::NOCLIP, false));
+	e->setOverrideColor(style.getColor(StyleSpec::TEXTCOLOR, video::SColor(0xFFFFFFFF)));
+	e->setOverrideFont(font);
 
-    m_fields.push_back(spec);
+	m_fields.push_back(spec);
 
-    e->grab();
-    m_clickthrough_elements.push_back(e);
+	e->grab();
+	m_clickthrough_elements.push_back(e);
 }
 
 void GUIFormSpecMenu::parseImageButton(parserData* data, const std::string &element)
