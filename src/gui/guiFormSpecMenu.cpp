@@ -1882,11 +1882,19 @@ void GUIFormSpecMenu::parseVertLabel(parserData* data, const std::string &elemen
 	if (!precheckElement("vertlabel", element, 2, 2, parts))
 		return;
 
+<<<<<<< HEAD
 	std::vector<std::string> v_pos = split(parts[0], ',');
 	MY_CHECKPOS("vertlabel", 0);
 
 	// Use EnrichedString so color escapes are preserved
 	EnrichedString etext(unescape_string(utf8_to_wide(parts[1])));
+=======
+	std::vector<std::string> v_pos = split(parts[0],',');
+	std::wstring text = unescape_translate(
+		unescape_string(utf8_to_wide(parts[1])));
+
+	MY_CHECKPOS("vertlabel",1);
+>>>>>>> parent of 00010ade3 (Use EnrichedString in vertlabel[] formspec element to support core.colorize)
 
 	auto style = getDefaultStyleForElement("vertlabel", "", "label");
 	gui::IGUIFont *font = style.getFont();
@@ -1896,6 +1904,7 @@ void GUIFormSpecMenu::parseVertLabel(parserData* data, const std::string &elemen
 	v2s32 pos;
 	core::rect<s32> rect;
 
+<<<<<<< HEAD
 	const size_t char_count = etext.getString().size();
 
 	if (data->real_coordinates) {
@@ -1907,10 +1916,25 @@ void GUIFormSpecMenu::parseVertLabel(parserData* data, const std::string &elemen
 			pos.X + imgsize.X,
 			pos.Y + font_line_height(font) * (char_count + 1)
 		);
+=======
+	if (data->real_coordinates) {
+		pos = getRealCoordinateBasePos(v_pos);
+
+		// Vertlabels are positioned by center, not left.
+		pos.X -= imgsize.X / 2;
+
+		// We use text.length + 1 because without it, the rect
+		// isn't quite tall enough and cuts off the text.
+		rect = core::rect<s32>(pos.X, pos.Y,
+			pos.X + imgsize.X,
+			pos.Y + font_line_height(font) *
+			(text.length() + 1));
+>>>>>>> parent of 00010ade3 (Use EnrichedString in vertlabel[] formspec element to support core.colorize)
 
 	} else {
 		pos = getElementBasePos(&v_pos);
 
+<<<<<<< HEAD
 		rect = core::rect<s32>(
 			pos.X,
 			pos.Y + ((imgsize.Y / 2) - m_btn_height),
@@ -1939,15 +1963,53 @@ void GUIFormSpecMenu::parseVertLabel(parserData* data, const std::string &elemen
 	);
 
 	gui::IGUIStaticText *e = gui::StaticText::add(Environment, vlabel,
-			rect, false, false, data->current_parent, spec.fid);
+=======
+		// As above, the length must be one longer. The width of
+		// the rect (15 pixels) seems rather arbitrary, but
+		// changing it might break something.
+		rect = core::rect<s32>(
+			pos.X, pos.Y+((imgsize.Y/2) - m_btn_height),
+			pos.X+15, pos.Y +
+				font_line_height(font) *
+				(text.length() + 1) +
+				((imgsize.Y/2) - m_btn_height));
+	}
 
+	if(!data->explicit_size)
+		warningstream<<"invalid use of label without a size[] element"<<std::endl;
+
+	std::wstring label;
+
+	for (wchar_t i : text) {
+		label += i;
+		label += L"\n";
+	}
+
+	FieldSpec spec(
+		"",
+		label,
+		L"",
+		258 + m_fields.size()
+	);
+	gui::IGUIStaticText *e = gui::StaticText::add(Environment, spec.flabel.c_str(),
+>>>>>>> parent of 00010ade3 (Use EnrichedString in vertlabel[] formspec element to support core.colorize)
+			rect, false, false, data->current_parent, spec.fid);
 	e->setTextAlignment(gui::EGUIA_CENTER, gui::EGUIA_CENTER);
+
+<<<<<<< HEAD
+	e->setTextAlignment(gui::EGUIA_CENTER, gui::EGUIA_CENTER);
+=======
+>>>>>>> parent of 00010ade3 (Use EnrichedString in vertlabel[] formspec element to support core.colorize)
 	e->setNotClipped(style.getBool(StyleSpec::NOCLIP, false));
 	e->setOverrideColor(style.getColor(StyleSpec::TEXTCOLOR, video::SColor(0xFFFFFFFF)));
 	e->setOverrideFont(font);
 
 	m_fields.push_back(spec);
 
+<<<<<<< HEAD
+=======
+	// vertlabels should let events through
+>>>>>>> parent of 00010ade3 (Use EnrichedString in vertlabel[] formspec element to support core.colorize)
 	e->grab();
 	m_clickthrough_elements.push_back(e);
 }
