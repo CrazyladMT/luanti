@@ -2820,6 +2820,16 @@ void GUIFormSpecMenu::parseModel(parserData *data, const std::string &element)
 		return;
 	}
 
+	// Build cache key (everything except position)
+	std::string cache_key =
+		meshstr + "|" +
+		parts[4] + "|" +
+		parts[5] + "|" +
+		parts[6] + "|" +
+		parts[7] + "|" +
+		parts[8] + "|" +
+		parts[9];
+
 	FieldSpec spec(
 		name,
 		L"",
@@ -2829,12 +2839,26 @@ void GUIFormSpecMenu::parseModel(parserData *data, const std::string &element)
 
 	core::rect<s32> rect(pos, pos + geom);
 
+	// Try to reuse cached model
+	auto &cache = m_client->getModelCache();
+	auto it = cache.find(cache_key);
+	if (it != cache.end()) {
+		GUIScene *e = it->second;
+
+		this->addChild(e);
+		m_fields.push_back(spec);
+		return;
+	}
+
 	GUIScene *e = new GUIScene(Environment,
 			m_client->getSceneManager(),
-			data->current_parent,
+			this,
 			m_client->getShaderSource(),
 			rect,
 			spec.fid);
+
+	// Keep a reference for the cache
+	e->grab();
 
 	auto meshnode = e->setMesh(mesh);
 	mesh->drop();
@@ -2858,8 +2882,8 @@ void GUIFormSpecMenu::parseModel(parserData *data, const std::string &element)
 	f32 frame_loop_end = std::numeric_limits<f32>::infinity();
 
 	if (frame_loop.size() == 2) {
-	    frame_loop_begin = stof(frame_loop[0]);
-	    frame_loop_end = stof(frame_loop[1]);
+		frame_loop_begin = stof(frame_loop[0]);
+		frame_loop_end = stof(frame_loop[1]);
 	}
 
 	e->setFrameLoop(frame_loop_begin, frame_loop_end);
@@ -2867,7 +2891,9 @@ void GUIFormSpecMenu::parseModel(parserData *data, const std::string &element)
 
 	auto style = getStyleForElement("model", spec.fname);
 	e->setStyles(style);
-	e->drop();
+
+	// Store in cache
+	cache[cache_key] = e;
 
 	m_fields.push_back(spec);
 }

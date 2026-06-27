@@ -30,6 +30,7 @@
 
 class Camera;
 class ClientMediaDownloader;
+class GUIScene;
 class ISoundManager;
 class IWritableItemDefManager;
 class IWritableShaderSource;
@@ -442,6 +443,10 @@ public:
 
 	bool inhibit_inventory_revert = false;
 
+	std::unordered_map<std::string, GUIScene*> &getModelCache() {
+        return m_model_cache;
+    }
+
 private:
 	struct PendingMediaDownload {
 		// Tokens to ack to the server. multiple because server can send duplicate
@@ -506,6 +511,8 @@ private:
 	ELoginRegister m_allow_login_or_register = ELoginRegister::Any;
 	Camera *m_camera = nullptr;
 	std::unique_ptr<Minimap> m_minimap;
+
+	std::unordered_map<std::string, GUIScene*> m_model_cache;
 
 	// Server serialization version
 	u8 m_server_ser_ver;

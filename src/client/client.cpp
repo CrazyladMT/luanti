@@ -23,6 +23,7 @@
 #include "gettext.h"
 #include "gettime.h"
 #include "guiscalingfilter.h"
+#include "gui/guiScene.h"
 #include "item_visuals_manager.h"
 #include "itemdef.h"
 #include "mapblock.h"
@@ -428,6 +429,12 @@ Client::~Client()
 	for (auto &csp : m_sounds_client_to_server)
 		m_sound->freeId(csp.first);
 	m_sounds_client_to_server.clear();
+
+	for (auto &p : m_model_cache) {
+		if (p.second)
+			p.second->drop();
+	}
+	m_model_cache.clear();
 }
 
 void Client::connect(const Address &address, const std::string &address_name)
