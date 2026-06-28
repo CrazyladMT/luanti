@@ -444,8 +444,8 @@ public:
 	bool inhibit_inventory_revert = false;
 
 	std::unordered_map<std::string, GUIScene*> &getModelCache() {
-        return m_model_cache;
-    }
+		return m_model_cache;
+	}
 
 private:
 	struct PendingMediaDownload {
